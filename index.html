@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洛谷文章统计站 - 文章</title>
+    <link rel="icon" href="image/logo.ico" type="image/x-icon">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --border-radius: 6px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* 导航栏样式 */
+        header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: 40px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            background-color: #f0f0f0;
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 主内容区样式 */
+        main {
+            flex: 1;
+            padding: 2rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .update-info {
+            background-color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .sort-options {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-box input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        /* 表格样式 */
+        .table-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition);
+        }
+
+        th:hover {
+            background-color: var(--secondary-color);
+        }
+
+        th i {
+            margin-left: 5px;
+            font-size: 0.8rem;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        td {
+            padding: 1rem;
+        }
+
+        .title-cell {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .author-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .author-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .pink { background-color: #e91e63; }
+        .orange { background-color: #ff9800; }
+        .blue { background-color: #2196f3; }
+        .gold { background-color: #ffd700; }
+        .default { background-color: #9e9e9e; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .badge.gold { background-color: #ffd700; color: #333; }
+        .badge.blue { background-color: #2196f3; color: white; }
+
+        .like-count, .comment-count {
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            min-width: 40px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .pagination button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* 底部样式 */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sort-options {
+                justify-content: space-between;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 800px;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="image/logo.ico" alt="洛谷Logo">
+                <span class="logo-text">洛谷文章统计站</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">首页</a>
+                <a href="/user">用户</a>
+                <a href="/article" class="active">文章</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 主内容区 -->
+    <main>
+        <div class="page-header">
+            <h1>洛谷休闲娱乐区文章统计</h1>
+            <p>浏览、搜索和排序洛谷休闲娱乐区的文章数据</p>
+        </div>
+
+        <div class="update-info" id="update-time">
+            数据加载中...
+        </div>
+
+        <div class="filters">
+            <div class="sort-options">
+                <select id="sort-by">
+                    <option value="like">点赞量</option>
+                    <option value="time">发布时间</option>
+                    <option value="comment">评论量</option>
+                </select>
+                <select id="sort-order">
+                    <option value="desc">降序</option>
+                    <option value="asc">升序</option>
+                </select>
+            </div>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="搜索文章标题或作者...">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="loading" id="loading-indicator">
+                <div class="spinner"></div>
+                正在加载文章数据...
+            </div>
+            <table id="articles-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>文章名称</th>
+                        <th>作者</th>
+                        <th>发布时间</th>
+                        <th>点赞量</th>
+                        <th>评论量</th>
+                    </tr>
+                </thead>
+                <tbody id="articles-body">
+                    <!-- 文章数据将通过JavaScript动态填充 -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination" id="pagination">
+            <!-- 分页按钮将通过JavaScript动态生成 -->
+        </div>
+    </main>
+
+    <!-- 底部信息栏 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">首页</a>
+                <a href="/user">用户</a>
+                <a href="/article">文章</a>
+                <a href="#">关于我们</a>
+                <a href="#">隐私政策</a>
+            </div>
+            <p class="copyright">© 2025 洛谷文章统计站 - 本网站与洛谷官方无关</p>
+        </div>
+    </footer>
+
+    <script>
+        // 全局变量
+        let articlesData = {};
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        let currentSortBy = 'like';
+        let currentSortOrder = 'desc';
+        let currentSearchTerm = '';
+
+        // DOM 元素
+        const updateTimeElement = document.getElementById('update-time');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const articlesTable = document.getElementById('articles-table');
+        const articlesBody = document.getElementById('articles-body');
+        const paginationElement = document.getElementById('pagination');
+        const sortBySelect = document.getElementById('sort-by');
+        const sortOrderSelect = document.getElementById('sort-order');
+        const searchInput = document.getElementById('search-input');
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            
+            // 添加事件监听器
+            sortBySelect.addEventListener('change', handleSortChange);
+            sortOrderSelect.addEventListener('change', handleSortChange);
+            searchInput.addEventListener('input', handleSearch);
+        });
+
+        // 加载数据
+        async function loadData() {
+            try {
+                // 获取当前时间戳
+                const curtimeResponse = await fetch('json/curtime.json');
+                const curtimeData = await curtimeResponse.json();
+                const curtime = curtimeData.curtime;
+                
+                // 更新页面上的时间信息
+                updateTimeElement.textContent = `数据最后更新时间: ${formatDate(curtime)}`;
+                
+                // 加载文章数据
+                const articlesResponse = await fetch(`json/xxyl_data_${curtime}.json`);
+                articlesData = await articlesResponse.json();
+                
+                // 隐藏加载指示器，显示表格
+                loadingIndicator.style.display = 'none';
+                articlesTable.style.display = 'table';
+                
+                // 渲染表格
+                renderTable();
+            } catch (error) {
+                console.error('加载数据时出错:', error);
+                updateTimeElement.textContent = '数据加载失败，请刷新页面重试';
+                loadingIndicator.innerHTML = '<p>数据加载失败，请刷新页面重试</p>';
+            }
+        }
+
+        // 处理排序变化
+        function handleSortChange() {
+            currentSortBy = sortBySelect.value;
+            currentSortOrder = sortOrderSelect.value;
+            currentPage = 1; // 重置到第一页
+            renderTable();
+        }
+
+        // 处理搜索
+        function handleSearch() {
+            currentSearchTerm = searchInput.value.toLowerCase();
+            currentPage = 1; // 重置到第一页
+            renderTable();
+        }
+
+        // 渲染表格
+        function renderTable() {
+            // 获取过滤和排序后的文章
+            const filteredAndSortedArticles = getFilteredAndSortedArticles();
+            
+            // 计算分页
+            const totalPages = Math.ceil(filteredAndSortedArticles.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedArticles = filteredAndSortedArticles.slice(startIndex, endIndex);
+            
+            // 清空表格内容
+            articlesBody.innerHTML = '';
+            
+            // 填充表格行
+            paginatedArticles.forEach((article, index) => {
+                const row = document.createElement('tr');
+                const globalIndex = startIndex + index + 1;
+                
+                row.innerHTML = `
+                    <td>${globalIndex}</td>
+                    <td class="title-cell" title="${article.title}">${article.title}</td>
+                    <td>
+                        <div class="author-cell">
+                            <span class="author-color ${article.authorcolor || 'default'}"></span>
+                            ${article.author}
+                            ${article.badgecolor ? `<span class="badge ${article.badgecolor}">${getBadgeText(article.badgecolor)}</span>` : ''}
+                        </div>
+                    </td>
+                    <td>${formatArticleTime(article.time)}</td>
+                    <td><span class="like-count">${article.like}</span></td>
+                    <td><span class="comment-count">${article.comment}</span></td>
+                `;
+                
+                articlesBody.appendChild(row);
+            });
+            
+            // 渲染分页控件
+            renderPagination(totalPages);
+        }
+
+        // 获取过滤和排序后的文章
+        function getFilteredAndSortedArticles() {
+            // 转换为数组并过滤
+            let articlesArray = Object.values(articlesData);
+            
+            if (currentSearchTerm) {
+                articlesArray = articlesArray.filter(article => 
+                    article.title.toLowerCase().includes(currentSearchTerm) || 
+                    article.author.toLowerCase().includes(currentSearchTerm)
+                );
+            }
+            
+            // 排序
+            articlesArray.sort((a, b) => {
+                let aValue, bValue;
+                
+                if (currentSortBy === 'time') {
+                    aValue = new Date(a.time).getTime();
+                    bValue = new Date(b.time).getTime();
+                } else {
+                    aValue = a[currentSortBy];
+                    bValue = b[currentSortBy];
+                }
+                
+                if (currentSortOrder === 'asc') {
+                    return aValue - bValue;
+                } else {
+                    return bValue - aValue;
+                }
+            });
+            
+            return articlesArray;
+        }
+
+        // 渲染分页控件
+        function renderPagination(totalPages) {
+            paginationElement.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // 上一页按钮
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '&laquo; 上一页';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+            paginationElement.appendChild(prevButton);
+            
+            // 页码按钮
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, startPage + 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.classList.toggle('active', i === currentPage);
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderTable();
+                });
+                paginationElement.appendChild(pageButton);
+            }
+            
+            // 下一页按钮
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '下一页 &raquo;';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+            paginationElement.appendChild(nextButton);
+        }
+
+        // 工具函数：格式化日期
+        function formatDate(curtime) {
+            // 将 "20250924_203047" 转换为 "2025年9月24日 20:30:47"
+            const year = curtime.substring(0, 4);
+            const month = parseInt(curtime.substring(4, 6));
+            const day = curtime.substring(6, 8);
+            const hour = curtime.substring(9, 11);
+            const minute = curtime.substring(11, 13);
+            const second = curtime.substring(13, 15);
+            
+            return `${year}年${month}月${day}日 ${hour}:${minute}:${second}`;
+        }
+
+        // 工具函数：格式化文章时间
+        function formatArticleTime(timeString) {
+            const date = new Date(timeString);
+            return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'});
+        }
+
+        // 工具函数：获取徽章文本
+        function getBadgeText(badgecolor) {
+            switch(badgecolor) {
+                case 'gold': return '金';
+                case 'blue': return '蓝';
+                default: return '';
+            }
+        }
+    </script>
+</body>
+</html>
