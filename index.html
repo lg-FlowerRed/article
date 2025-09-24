@@ -678,7 +678,9 @@
         // 获取过滤和排序后的文章
         function getFilteredAndSortedArticles() {
             // 转换为数组并过滤
-            let articlesArray = Object.values(articlesData);
+            let articlesArray = Object.entries(articlesData).map(([id, article]) => {
+                return { id, ...article };
+            });
             
             if (currentSearchTerm) {
                 articlesArray = articlesArray.filter(article => 
@@ -687,7 +689,7 @@
                 );
             }
             
-            // 排序
+            // 排序（保持不变）
             articlesArray.sort((a, b) => {
                 let aValue, bValue;
                 
@@ -795,5 +797,6 @@
     </script>
 </body>
 </html>
+
 
 
