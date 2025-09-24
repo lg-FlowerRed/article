@@ -76,6 +76,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-right: auto;
         }
 
         .logo img {
@@ -92,6 +93,7 @@
         .nav-links {
             display: flex;
             gap: 2rem;
+            margin-left: auto;
         }
 
         .nav-links a {
@@ -453,20 +455,38 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .qa-button {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--dark-color);
+            margin-left: auto;
+            margin-right: 2rem;
+        }
+        
+        .qa-button:hover {
+            background-color: #f0f0f0;
+            color: var(--primary-color);
+        }
+
+        
     </style>
 </head>
 <body>
     <!-- 导航栏 -->
     <header>
         <nav class="navbar">
-            <div class="logo">
+            <a href="/" class="logo">
                 <img src="image/logo.ico" alt="洛谷Logo">
                 <span class="logo-text">洛谷文章统计站</span>
-            </div>
+            </a>
+            <a href="/QandA" class="qa-button">常见问题 Q&A</a>
             <div class="nav-links">
                 <a href="/">首页</a>
-                <a href="/user">用户</a>
                 <a href="/article" class="active">文章</a>
+                <a href="/user">用户</a>
             </div>
         </nav>
     </header>
@@ -631,13 +651,17 @@
                 
                 row.innerHTML = `
                     <td>${globalIndex}</td>
-                    <td class="title-cell" title="${article.title}">${article.title}</td>
+                    <td class="title-cell" title="${article.title}">
+                        <a href="https://www.luogu.com.cn/article/${article.id}" target="_blank">${article.title}</a>
+                    </td>
                     <td>
-                        <div class="author-cell">
-                            <span class="author-name ${article.authorcolor || 'grey'}">${article.author}</span>
-                            ${article.tag ? `<span class="user-tag ${article.authorcolor || 'grey'}">${article.tag}</span>` : ''}
-                            ${article.badgecolor ? `<span class="badge ${article.badgecolor}">${getBadgeSvg(article.badgecolor)}</span>` : ''}
-                        </div>
+                        <a href="/user/${article.uid}" style="display: contents;">
+                            <div class="author-cell">
+                                <span class="author-name ${article.authorcolor || 'grey'}">${article.author}</span>
+                                ${article.tag ? `<span class="user-tag ${article.authorcolor || 'grey'}">${article.tag}</span>` : ''}
+                                ${article.badgecolor ? `<span class="badge ${article.badgecolor}">${getBadgeSvg(article.badgecolor)}</span>` : ''}
+                            </div>
+                        </a>
                     </td>
                     <td>${formatArticleTime(article.time)}</td>
                     <td><span class="like-count">${article.like}</span></td>
@@ -771,4 +795,5 @@
     </script>
 </body>
 </html>
+
 
